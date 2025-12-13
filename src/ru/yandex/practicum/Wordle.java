@@ -44,6 +44,8 @@ public class Wordle {
                     } else {
                         System.out.println("-> " + response);
                     }
+                } catch (WordAlreadyGuessedException e) {
+                    System.out.println(e.getMessage());
                 } catch (StepsLimitExceededException e) {
                     System.out.println(e.getMessage() + " Загаданное слово: " + game.getAnswer());
                 } catch (TooLongWordException | TooShortWordException e) {
@@ -52,12 +54,20 @@ public class Wordle {
                     System.out.println("Слово должно быть русским!");
                 } catch (WordNotFoundInDictionaryException e) {
                     System.out.println("Такого слова в словаре нет!");
+                } catch (Exception e) {
+                    log.println(e.getMessage());
+                    System.out.println("Возникла ошибка - программа закрыта!");
+                    System.out.println("Подробнее см. " + LOG_FILE);
                 }
             }
+        } catch (DictionaryNotFoundException e) {
+            System.out.println("Не найден файл словаря " + DICTIONARY_FILE);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("Не получилось создать файл " + LOG_FILE);
+            System.out.println(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
     }
 
     private static PrintWriter createLog() throws IOException {
