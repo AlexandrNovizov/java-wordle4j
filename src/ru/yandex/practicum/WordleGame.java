@@ -1,11 +1,10 @@
 package ru.yandex.practicum;
 
-import ru.yandex.practicum.exceptions.NotRussianWordException;
-import ru.yandex.practicum.exceptions.StepsLimitExceededException;
-import ru.yandex.practicum.exceptions.TooShortWordException;
-import ru.yandex.practicum.exceptions.WordNotFoundInDictionaryException;
+import ru.yandex.practicum.exceptions.*;
 
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 /*
 в этом классе хранится словарь и состояние игры
@@ -31,8 +30,9 @@ public class WordleGame {
 
     private boolean isFromHelper = false;
 
-    private PrintWriter log;
+    private final PrintWriter log;
 
+    private final Set<String> guessedWords = new HashSet<>();
     private final int WORD_LENGTH;
 
     public WordleGame(WordleDictionary dictionary, PrintWriter log, int wordLength) {
@@ -67,6 +67,7 @@ public class WordleGame {
             throw new StepsLimitExceededException("Попытки закончились!");
         }
         log.println("Осталось " + steps + " попыток");
+        guessedWords.add(word);
         String mask = getMask(word);
         log.println("Выведено " + mask);
         dictionary.filter(word, mask);
@@ -108,6 +109,10 @@ public class WordleGame {
             String message = "Слово '" + word + "' не найдено в словаре";
             log.println(message);
             throw new WordNotFoundInDictionaryException(message);
+        }
+
+        if (guessedWords.contains(word)) {
+            throw new WordAlreadyGuessedException("Слово '" + word + "' уже было загадано");
         }
     }
 
