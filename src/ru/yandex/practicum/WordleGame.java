@@ -1,5 +1,12 @@
 package ru.yandex.practicum;
 
+import ru.yandex.practicum.exceptions.NotRussianWordException;
+import ru.yandex.practicum.exceptions.StepsLimitExceededException;
+import ru.yandex.practicum.exceptions.TooShortWordException;
+import ru.yandex.practicum.exceptions.WordNotFoundInDictionaryException;
+
+import java.io.PrintWriter;
+
 /*
 в этом классе хранится словарь и состояние игры
     текущий шаг
@@ -20,4 +27,104 @@ public class WordleGame {
 
     private WordleDictionary dictionary;
 
+    private boolean isRunning;
+
+    private boolean isFromHelper = false;
+
+    private PrintWriter log;
+
+    private final int WORD_LENGTH;
+
+    public WordleGame(WordleDictionary dictionary, PrintWriter log, int wordLength) {
+        this.dictionary = dictionary;
+        steps = 6;
+        this.log = log;
+        WORD_LENGTH = wordLength;
+        isRunning = true;
+        answer = dictionary.getWord();
+        this.log.println("Загадано слово " + answer);
+    }
+
+    public String getRandomWord() {
+        isFromHelper = true;
+        return dictionary.getAndRemoveWord();
+    }
+
+    public String guess(String word) {
+        log.println("Введено слово '" + word + "'");
+
+        checkWord(word);
+
+        if (answer.equals(word)) {
+            log.println("Победа игрока");
+            isRunning = false;
+            return answer;
+        }
+
+        steps--;
+        if (steps == 0) {
+            isRunning = false;
+            throw new StepsLimitExceededException("Попытки закончились!");
+        }
+        log.println("Осталось " + steps + " попыток");
+        String mask = getMask(word);
+        log.println("Выведено " + mask);
+        dictionary.filter(word, mask);
+        return mask;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    // для тестов
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    private void checkWord(String word) {
+        if (word.length() < WORD_LENGTH && !word.isEmpty()) {
+            String message = "Слово '" + word + "' слишком короткое";
+            log.println(message);
+            throw new TooShortWordException(message);
+        } else if (word.length() > WORD_LENGTH) {
+            String message = "Слово '" + word + "' слишком длинное";
+            log.println(message);
+            throw new TooShortWordException(message);
+        }
+
+        if (!word.matches("[а-яА-Я]+")) {
+            String message = "Слово '" + word + "' не является русским";
+            log.println(message);
+            throw new NotRussianWordException(message);
+        }
+
+        if (!(isFromHelper || dictionary.contains(word))) {
+            isFromHelper = false;
+            String message = "Слово '" + word + "' не найдено в словаре";
+            log.println(message);
+            throw new WordNotFoundInDictionaryException(message);
+        }
+    }
+
+    private String getMask(String word) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < WORD_LENGTH; ++i) {
+            char ch = word.charAt(i);
+            if (answer.indexOf(ch) != -1) {
+                if (answer.charAt(i) == ch) {
+                    builder.append(SpecialCharacter.HAS.getCharacter());
+                } else {
+                    builder.append(SpecialCharacter.CONTAINS.getCharacter());
+                }
+            } else {
+                builder.append(SpecialCharacter.NOT_CONTAINS.getCharacter());
+            }
+        }
+        return builder.toString();
+    }
 }
