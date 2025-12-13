@@ -7,16 +7,16 @@ import java.util.*;
 public class WordleDictionary {
 
     private final Set<String> words;
+    private final List<String> filteredWords;
 
     private final Set<FilterRule> appliedFilters = new HashSet<>();
 
     private final PrintWriter log;
-    private final int WORD_LENGTH;
 
-    public WordleDictionary(Collection<String> words, int wordLength, PrintWriter log) {
+    public WordleDictionary(Collection<String> words, PrintWriter log) {
         this.words = new HashSet<>(words);
+        filteredWords = new LinkedList<>(words);
         this.log = log;
-        WORD_LENGTH = wordLength;
     }
 
     public boolean contains(String word) {
@@ -25,14 +25,14 @@ public class WordleDictionary {
 
     public String getAndRemoveWord() {
         String word = getWord();
-        words.remove(word);
+        filteredWords.remove(word);
         log.println("Удалено случайное слово " + word);
         return word;
     }
 
     public String getWord() {
-        int index = new Random().nextInt(Math.min(WORD_LENGTH, words.size()));
-        String word = words.toArray()[index].toString();
+        int index = new Random().nextInt(filteredWords.size());
+        String word = filteredWords.get(index);
         log.println("Подобрано случайное слово " + word);
         return word;
     }
@@ -42,7 +42,8 @@ public class WordleDictionary {
             SpecialCharacter ch = SpecialCharacter.fromChar(mask.charAt(i));
             FilterRule rule;
             if (ch == SpecialCharacter.NOT_CONTAINS) {
-                rule = new FilterRule(ch, word.charAt(i), mask.length());
+                // если слово не содержит букву, то не важно, где она стоит, и индекс = -1
+                rule = new FilterRule(ch, word.charAt(i), -1);
             } else {
                 rule = new FilterRule(ch, word.charAt(i), i);
             }
@@ -61,18 +62,18 @@ public class WordleDictionary {
     }
 
     private void removeIfCharAtIndex(char ch, int index) {
-        words.removeIf(word -> word.charAt(index) == ch);
+        filteredWords.removeIf(word -> word.charAt(index) == ch);
     }
 
     private void removeIfCharNotAtIndex(char ch, int index) {
-        words.removeIf(word -> word.charAt(index) != ch);
+        filteredWords.removeIf(word -> word.charAt(index) != ch);
     }
 
     private void removeIfContains(char ch) {
-        words.removeIf(word -> word.indexOf(ch) != -1);
+        filteredWords.removeIf(word -> word.indexOf(ch) != -1);
     }
 
-    private void removeIfNotContains(char ch) {words.removeIf(word -> word.indexOf(ch) == -1);}
+    private void removeIfNotContains(char ch) {filteredWords.removeIf(word -> word.indexOf(ch) == -1);}
 
     private static class FilterRule {
 

@@ -44,6 +44,6 @@ public class WordleDictionaryLoader {
             throw new DictionaryNotFoundException(e.getMessage());
         }
         log.println("Загрузка завершена");
-        return new WordleDictionary(words, WORD_LENGTH, log);
+        return new WordleDictionary(words, log);
     }
 }
