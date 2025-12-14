@@ -21,13 +21,13 @@ public class WordleGame {
     private final PrintWriter log;
 
     private final Set<String> guessedWords = new HashSet<>();
-    private final int WORD_LENGTH;
+    private final int wordLength;
 
     public WordleGame(WordleDictionary dictionary, PrintWriter log, int wordLength) {
         this.dictionary = dictionary;
         steps = 6;
         this.log = log;
-        WORD_LENGTH = wordLength;
+        this.wordLength = wordLength;
         isRunning = true;
         answer = dictionary.getWord(false);
         this.log.println("Загадано слово " + answer);
@@ -75,11 +75,11 @@ public class WordleGame {
     }
 
     private void checkWord(String word) {
-        if (word.length() < WORD_LENGTH && !word.isEmpty()) {
+        if (word.length() < wordLength && !word.isEmpty()) {
             String message = "Слово '" + word + "' слишком короткое";
             log.println(message);
             throw new TooShortWordException(message);
-        } else if (word.length() > WORD_LENGTH) {
+        } else if (word.length() > wordLength) {
             String message = "Слово '" + word + "' слишком длинное";
             log.println(message);
             throw new TooLongWordException(message);
@@ -105,7 +105,7 @@ public class WordleGame {
 
     private String getMask(String word) {
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < WORD_LENGTH; ++i) {
+        for (int i = 0; i < wordLength; ++i) {
             char ch = word.charAt(i);
             if (answer.indexOf(ch) != -1) {
                 if (answer.charAt(i) == ch) {
