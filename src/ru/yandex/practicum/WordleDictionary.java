@@ -8,6 +8,7 @@ public class WordleDictionary {
 
     private final Set<String> words;
     private final List<String> filteredWords;
+    private final Random random;
 
     private final Set<FilterRule> appliedFilters = new HashSet<>();
 
@@ -17,23 +18,28 @@ public class WordleDictionary {
         this.words = new HashSet<>(words);
         filteredWords = new LinkedList<>(words);
         this.log = log;
+        random = new Random();
+    }
+
+    public WordleDictionary(Set<String> words, List<String> filteredWords, Random random, PrintWriter log) {
+        this.words = words;
+        this.filteredWords = filteredWords;
+        this.random = random;
+        this.log = log;
     }
 
     public boolean contains(String word) {
         return words.contains(word);
     }
 
-    public String getAndRemoveWord() {
-        String word = getWord();
-        filteredWords.remove(word);
-        log.println("Удалено случайное слово " + word);
-        return word;
-    }
-
-    public String getWord() {
-        int index = new Random().nextInt(filteredWords.size());
+    public String getWord(boolean remove) {
+        int index = random.nextInt(filteredWords.size());
         String word = filteredWords.get(index);
         log.println("Подобрано случайное слово " + word);
+        if (remove) {
+            filteredWords.remove(word);
+            log.println("Удалено случайное слово " + word);
+        }
         return word;
     }
 

@@ -41,13 +41,13 @@ public class WordleGame {
         this.log = log;
         WORD_LENGTH = wordLength;
         isRunning = true;
-        answer = dictionary.getWord();
+        answer = dictionary.getWord(false);
         this.log.println("Загадано слово " + answer);
     }
 
     public String getRandomWord() {
         isFromHelper = true;
-        return dictionary.getAndRemoveWord();
+        return dictionary.getWord(true);
     }
 
     public String guess(String word) {
