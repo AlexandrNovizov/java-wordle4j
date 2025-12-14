@@ -17,7 +17,7 @@ public class Wordle {
 
     public static void main(String[] args) {
 
-        try(PrintWriter log = createLog(); Scanner scanner = new Scanner(System.in)) {
+        try (PrintWriter log = createLog(); Scanner scanner = new Scanner(System.in)) {
             WordleDictionaryLoader loader = new WordleDictionaryLoader(DICTIONARY_FILE.toString(), WORD_LENGTH, log);
             WordleDictionary dictionary = loader.load();
             WordleGame game = new WordleGame(dictionary, log, WORD_LENGTH);

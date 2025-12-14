@@ -24,7 +24,7 @@ public class WordleDictionaryLoader {
     public WordleDictionary load() throws IOException, DictionaryNotFoundException {
         log.println("Загрузка словаря " + filename);
         List<String> words = new LinkedList<>();
-        try(BufferedReader reader = new BufferedReader(new FileReader(filename, StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename, StandardCharsets.UTF_8))) {
             while (reader.ready()) {
                 String word = reader.readLine();
                 if (word.length() == wordLength) {
