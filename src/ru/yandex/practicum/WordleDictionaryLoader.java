@@ -9,7 +9,7 @@ import java.util.List;
 
 public class WordleDictionaryLoader {
 
-    public final int WORD_LENGTH;
+    public final int wordLength;
 
     private final String filename;
 
@@ -17,7 +17,7 @@ public class WordleDictionaryLoader {
 
     public WordleDictionaryLoader(String filename, int wordLength, PrintWriter log) {
         this.filename = filename;
-        WORD_LENGTH = wordLength;
+        this.wordLength = wordLength;
         this.log = log;
     }
 
@@ -27,7 +27,7 @@ public class WordleDictionaryLoader {
         try(BufferedReader reader = new BufferedReader(new FileReader(filename, StandardCharsets.UTF_8))) {
             while (reader.ready()) {
                 String word = reader.readLine();
-                if (word.length() == WORD_LENGTH) {
+                if (word.length() == wordLength) {
                     word = word.toLowerCase();
                     while (word.indexOf('ё') != -1) {
                         word = word.replace('ё', 'е');
