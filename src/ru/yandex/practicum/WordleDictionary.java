@@ -1,8 +1,9 @@
 package ru.yandex.practicum;
 
+import ru.yandex.practicum.exceptions.NoUnfilteredWordsException;
+
 import java.io.PrintWriter;
 import java.util.*;
-
 
 public class WordleDictionary {
 
@@ -21,9 +22,9 @@ public class WordleDictionary {
         random = new Random();
     }
 
-    public WordleDictionary(Set<String> words, List<String> filteredWords, Random random, PrintWriter log) {
-        this.words = words;
-        this.filteredWords = filteredWords;
+    public WordleDictionary(Collection<String> words, Random random, PrintWriter log) {
+        this.words = new HashSet<>(words);
+        this.filteredWords = new LinkedList<>(words);
         this.random = random;
         this.log = log;
     }
@@ -33,14 +34,18 @@ public class WordleDictionary {
     }
 
     public String getWord(boolean remove) {
-        int index = random.nextInt(filteredWords.size());
-        String word = filteredWords.get(index);
-        log.println("Подобрано случайное слово " + word);
-        if (remove) {
-            filteredWords.remove(word);
-            log.println("Удалено случайное слово " + word);
+        try {
+            int index = random.nextInt(filteredWords.size());
+            String word = filteredWords.get(index);
+            log.println("Подобрано случайное слово " + word);
+            if (remove) {
+                filteredWords.remove(word);
+                log.println("Удалено случайное слово " + word);
+            }
+            return word;
+        } catch (IllegalArgumentException e) {
+            throw new NoUnfilteredWordsException("Не осталось не отфильтрованных слов");
         }
-        return word;
     }
 
     public void filter(String word, String mask) {

@@ -82,7 +82,6 @@ public class WordleGame {
         return answer;
     }
 
-    // для тестов
     public void setAnswer(String answer) {
         this.answer = answer;
     }
@@ -95,7 +94,7 @@ public class WordleGame {
         } else if (word.length() > WORD_LENGTH) {
             String message = "Слово '" + word + "' слишком длинное";
             log.println(message);
-            throw new TooShortWordException(message);
+            throw new TooLongWordException(message);
         }
 
         if (!word.matches("[а-яА-Я]+")) {
