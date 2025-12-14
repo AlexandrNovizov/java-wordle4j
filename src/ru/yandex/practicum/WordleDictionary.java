@@ -84,7 +84,9 @@ public class WordleDictionary {
         filteredWords.removeIf(word -> word.indexOf(ch) != -1);
     }
 
-    private void removeIfNotContains(char ch) {filteredWords.removeIf(word -> word.indexOf(ch) == -1);}
+    private void removeIfNotContains(char ch) {
+        filteredWords.removeIf(word -> word.indexOf(ch) == -1);
+    }
 
     private static class FilterRule {
 

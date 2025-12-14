@@ -71,5 +71,4 @@ public class Wordle {
 
         return new PrintWriter(LOG_FILE.toFile());
     }
-
 }
