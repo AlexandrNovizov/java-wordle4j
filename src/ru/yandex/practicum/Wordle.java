@@ -26,7 +26,8 @@ public class Wordle {
                 try {
                     System.out.print("-> ");
                     String guess = scanner.nextLine();
-                    if (guess.isBlank()) {
+                    guess = WordleDictionary.normalizeWord(guess);
+                    if (guess.isEmpty()) {
                         guess = game.getRandomWord();
                         System.out.println("-> Подсказка: " + guess);
                     }

@@ -50,10 +50,10 @@ class WordleTest {
         words.add("c");
         WordleDictionary dictionary = new WordleDictionary(words, random, log);
 
-        dictionary.getWord(true);
-        dictionary.getWord(true);
+        dictionary.getAndRemoveRandomWord();
+        dictionary.getAndRemoveRandomWord();
 
-        assertThrows(NoUnfilteredWordsException.class, () -> dictionary.getWord(true));
+        assertThrows(NoUnfilteredWordsException.class, () -> dictionary.getAndRemoveRandomWord());
     }
 
     // WordleGame Tests

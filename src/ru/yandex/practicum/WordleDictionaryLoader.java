@@ -28,10 +28,7 @@ public class WordleDictionaryLoader {
             while (reader.ready()) {
                 String word = reader.readLine();
                 if (word.length() == wordLength) {
-                    word = word.toLowerCase();
-                    while (word.indexOf('ё') != -1) {
-                        word = word.replace('ё', 'е');
-                    }
+                    word = WordleDictionary.normalizeWord(word);
                     words.add(word);
                 }
             }

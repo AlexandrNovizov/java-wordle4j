@@ -33,19 +33,22 @@ public class WordleDictionary {
         return words.contains(word);
     }
 
-    public String getWord(boolean remove) {
+    public String getRandomWord() {
         try {
             int index = random.nextInt(filteredWords.size());
             String word = filteredWords.get(index);
             log.println("Подобрано случайное слово " + word);
-            if (remove) {
-                filteredWords.remove(word);
-                log.println("Удалено случайное слово " + word);
-            }
             return word;
         } catch (IllegalArgumentException e) {
             throw new NoUnfilteredWordsException("Не осталось не отфильтрованных слов");
         }
+    }
+
+    public String getAndRemoveRandomWord() {
+        String word = getRandomWord();
+        filteredWords.remove(word);
+        log.println("Удалено случайное слово " + word);
+        return word;
     }
 
     public void filter(String word, String mask) {
@@ -70,6 +73,16 @@ public class WordleDictionary {
                 }
             }
         }
+    }
+
+    public static String normalizeWord(String word) {
+        word = word.trim().toLowerCase();
+
+        while (word.indexOf('ё') != -1) {
+            word = word.replace('ё', 'е');
+        }
+
+        return word;
     }
 
     private void removeIfCharAtIndex(char ch, int index) {

@@ -12,6 +12,8 @@ public class WordleGame {
 
     private int steps;
 
+    private static final int DEFAULT_STEPS = 6;
+
     private WordleDictionary dictionary;
 
     private boolean isRunning;
@@ -25,17 +27,17 @@ public class WordleGame {
 
     public WordleGame(WordleDictionary dictionary, PrintWriter log, int wordLength) {
         this.dictionary = dictionary;
-        steps = 6;
         this.log = log;
         this.wordLength = wordLength;
+        steps = DEFAULT_STEPS;
         isRunning = true;
-        answer = dictionary.getWord(false);
+        answer = dictionary.getRandomWord();
         this.log.println("Загадано слово " + answer);
     }
 
     public String getRandomWord() {
         isFromHelper = true;
-        return dictionary.getWord(true);
+        return dictionary.getAndRemoveRandomWord();
     }
 
     public String guess(String word) {
