@@ -1,23 +1,124 @@
 package ru.yandex.practicum;
 
-/*
-в этом классе хранится словарь и состояние игры
-    текущий шаг
-    всё что пользователь вводил
-    правильный ответ
+import ru.yandex.practicum.exceptions.*;
 
-в этом классе нужны методы, которые
-    проанализируют совпадение слова с ответом
-    предложат слово-подсказку с учётом всего, что вводил пользователь ранее
+import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 
-не забудьте про специальные типы исключений для игровых и неигровых ошибок
- */
 public class WordleGame {
 
     private String answer;
 
     private int steps;
 
+    private static final int DEFAULT_STEPS = 6;
+
     private WordleDictionary dictionary;
 
+    private boolean isRunning;
+
+    private boolean isFromHelper = false;
+
+    private final PrintWriter log;
+
+    private final Set<String> guessedWords = new HashSet<>();
+    private final int wordLength;
+
+    public WordleGame(WordleDictionary dictionary, PrintWriter log, int wordLength) {
+        this.dictionary = dictionary;
+        this.log = log;
+        this.wordLength = wordLength;
+        steps = DEFAULT_STEPS;
+        isRunning = true;
+        answer = dictionary.getRandomWord();
+        this.log.println("Загадано слово " + answer);
+    }
+
+    public String getRandomWord() {
+        isFromHelper = true;
+        return dictionary.getAndRemoveRandomWord();
+    }
+
+    public String guess(String word) {
+        log.println("Введено слово '" + word + "'");
+
+        checkWord(word);
+
+        if (answer.equals(word)) {
+            log.println("Победа игрока");
+            isRunning = false;
+            return answer;
+        }
+
+        steps--;
+        if (steps == 0) {
+            isRunning = false;
+            throw new StepsLimitExceededException("Попытки закончились!");
+        }
+        log.println("Осталось " + steps + " попыток");
+        guessedWords.add(word);
+        String mask = getMask(word);
+        log.println("Выведено " + mask);
+        dictionary.filter(word, mask);
+        return mask;
+    }
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    private void checkWord(String word) {
+        if (word.length() < wordLength && !word.isEmpty()) {
+            String message = "Слово '" + word + "' слишком короткое";
+            log.println(message);
+            throw new TooShortWordException(message);
+        } else if (word.length() > wordLength) {
+            String message = "Слово '" + word + "' слишком длинное";
+            log.println(message);
+            throw new TooLongWordException(message);
+        }
+
+        if (!word.matches("[а-яА-Я]+")) {
+            String message = "Слово '" + word + "' не является русским";
+            log.println(message);
+            throw new NotRussianWordException(message);
+        }
+
+        if (!(isFromHelper || dictionary.contains(word))) {
+            isFromHelper = false;
+            String message = "Слово '" + word + "' не найдено в словаре";
+            log.println(message);
+            throw new WordNotFoundInDictionaryException(message);
+        }
+
+        if (guessedWords.contains(word)) {
+            throw new WordAlreadyGuessedException("Слово '" + word + "' уже было загадано");
+        }
+    }
+
+    private String getMask(String word) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < wordLength; ++i) {
+            char ch = word.charAt(i);
+            if (answer.indexOf(ch) != -1) {
+                if (answer.charAt(i) == ch) {
+                    builder.append(SpecialCharacter.HAS.getCharacter());
+                } else {
+                    builder.append(SpecialCharacter.CONTAINS.getCharacter());
+                }
+            } else {
+                builder.append(SpecialCharacter.NOT_CONTAINS.getCharacter());
+            }
+        }
+        return builder.toString();
+    }
 }
